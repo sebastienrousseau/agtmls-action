@@ -72,8 +72,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: sebastienrousseau/agtmls-core
-          path: .agtmls-core
+          repository: sebastienrousseau/agtmls-wasm
+          path: .agtmls-wasm
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: sebastienrousseau/agtmls-spec
@@ -87,6 +87,6 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
       - env:
-          AGTMLS_CORE: ${{ github.workspace }}/.agtmls-core
+          AGTMLS_WASM: ${{ github.workspace }}/.agtmls-wasm
           AGTMLS_SPEC: ${{ github.workspace }}/.agtmls-spec
         run: node scripts/check-vendor-fresh.mjs

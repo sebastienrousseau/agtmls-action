@@ -11,7 +11,7 @@
  * from a clean repository unless something checks.
  *
  * Compares the digest of the committed module against a fresh build.
- * Requires a sibling agtmls-core checkout, or AGTMLS_CORE.
+ * Requires a sibling agtmls-wasm checkout, or AGTMLS_WASM.
  */
 
 import { createHash } from "node:crypto";
@@ -36,12 +36,12 @@ async function digestOf(dir) {
   return hash.digest("hex");
 }
 
-async function coreDir() {
-  if (process.env.AGTMLS_CORE) return process.env.AGTMLS_CORE;
-  for (const candidate of ["../agtmls-core", "../../Rust/agtmls-core"]) {
+async function wasmDir() {
+  if (process.env.AGTMLS_WASM) return process.env.AGTMLS_WASM;
+  for (const candidate of ["../agtmls-wasm", "../../Rust/agtmls-wasm"]) {
     const resolved = path.join(HERE, "..", candidate);
     try {
-      await readdir(path.join(resolved, "crates"));
+      await readdir(path.join(resolved, "src"));
       return resolved;
     } catch {
       /* try the next */
@@ -50,11 +50,11 @@ async function coreDir() {
   return null;
 }
 
-const core = await coreDir();
-if (!core) {
+const wasm = await wasmDir();
+if (!wasm) {
   console.error(
-    "FAIL: agtmls-core not found. Set AGTMLS_CORE to a checkout of\n" +
-      "      https://github.com/sebastienrousseau/agtmls-core.\n" +
+    "FAIL: agtmls-wasm not found. Set AGTMLS_WASM to a checkout of\n" +
+      "      https://github.com/sebastienrousseau/agtmls-wasm.\n" +
       "      Refusing to skip: an unchecked vendored analyzer is exactly the\n" +
       "      thing this script exists to catch.",
   );
@@ -62,11 +62,11 @@ if (!core) {
 }
 
 const before = await digestOf(VENDOR);
-await run("wasm-pack", ["build", "crates/agtmls-wasm", "--target", "nodejs", "--release", "--out-dir", "pkg-node"], {
-  cwd: core,
+await run("wasm-pack", ["build", "--target", "nodejs", "--release", "--out-dir", "pkg-node"], {
+  cwd: wasm,
   maxBuffer: 32 * 1024 * 1024,
 });
-const after = await digestOf(path.join(core, "crates", "agtmls-wasm", "pkg-node"));
+const after = await digestOf(path.join(wasm, "pkg-node"));
 
 if (before !== after) {
   console.error(

@@ -15,8 +15,9 @@ trust.
 **Generated. Do not edit.** Rebuild with:
 
 ```bash
-wasm-pack build crates/agtmls-wasm --target nodejs --release --out-dir pkg-node
-cp crates/agtmls-wasm/pkg-node/agtmls_wasm{.js,_bg.wasm,.d.ts} \
+cd ../../Rust/agtmls-wasm
+wasm-pack build --target nodejs --release --out-dir pkg-node
+cp pkg-node/agtmls_wasm{.js,_bg.wasm,.d.ts} \
    ../../JavaScript/agtmls-action/vendor/wasm/
 ```
 
