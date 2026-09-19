@@ -6,6 +6,6 @@
   "type": "module",
   "license": "Apache-2.0 OR MIT",
   "repository": { "type": "git", "url": "git+https://github.com/sebastienrousseau/agtmls-action.git" },
-  "scripts": { "test": "node --test test/*.test.mjs" },
+  "scripts": { "test": "node --test" },
   "engines": { "node": ">=20" }
 }
