@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+name: "AgtMLS Skill Audit"
+description: "Static security analysis for agent skills: prompt injection, invisible-character smuggling, capability escalation and unsafe execution. Emits SARIF."
+author: "Sebastien Rousseau"
+
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  path:
+    description: "Directory to audit. Defaults to the whole workspace."
+    required: false
+    default: "."
+  fail-on:
+    description: "Lowest severity that fails the job: critical | high | medium | low | never."
+    required: false
+    default: "high"
+  sarif-file:
+    description: "Where to write the SARIF report."
+    required: false
+    default: "agtmls.sarif"
+  rules:
+    description: "Path to an agtmls-spec rules directory. Defaults to the rule set embedded in the module."
+    required: false
+    default: ""
+
+outputs:
+  findings:
+    description: "Total number of findings."
+    value: ${{ steps.audit.outputs.findings }}
+  blocking:
+    description: "Findings at or above fail-on."
+    value: ${{ steps.audit.outputs.blocking }}
+  sarif-file:
+    description: "Path to the SARIF report."
+    value: ${{ steps.audit.outputs.sarif-file }}
+
+runs:
+  using: composite
+  steps:
+    # The analyzer is the WASM build of agtmls-core, so this action needs no
+    # Rust toolchain, no platform matrix and no compilation step. Cold start is
+    # sub-second and the rule set is identical to the one the CLI enforces.
+    - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version: "20"
+    - id: audit
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
+        INPUT_RULES: ${{ inputs.rules }}
+      run: node "$GITHUB_ACTION_PATH/src/run.mjs"

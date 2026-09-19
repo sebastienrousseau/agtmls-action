@@ -1,0 +1,4 @@
+{
+  "type": "commonjs",
+  "//": "wasm-pack --target nodejs emits CommonJS. Scoping the module type here keeps the rest of the action ESM without renaming generated files."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@agtmls/action",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Static security analysis for agent skills, as GitHub pull-request annotations",
+  "type": "module",
+  "license": "Apache-2.0 OR MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/sebastienrousseau/agtmls-action.git" },
+  "scripts": { "test": "node --test test/*.test.mjs" },
+  "engines": { "node": ">=20" }
+}
