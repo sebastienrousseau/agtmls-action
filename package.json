@@ -5,7 +5,18 @@
   "description": "Static security analysis for agent skills, as GitHub pull-request annotations",
   "type": "module",
   "license": "Apache-2.0 OR MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/sebastienrousseau/agtmls-action.git" },
-  "scripts": { "test": "node --test" },
-  "engines": { "node": ">=20" }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebastienrousseau/agtmls-action.git"
+  },
+  "scripts": {
+    "test": "node --test",
+    "lint": "oxlint src scripts test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "oxlint": "^1.0.0"
+  }
 }

@@ -6,11 +6,23 @@
 **Static security analysis for agent skills, as inline pull-request
 annotations.**
 
+## Why this exists
+
 Agent skills are instructions a model will follow. A skill with a hidden
 instruction in it is not a bug report waiting to happen — it is a model doing
 what it was told, by someone who was not you. This action reads every file a
 skill ships and reports what it finds, as SARIF, so the findings land on the
 diff rather than in a log nobody opens.
+
+## What it will not do
+
+- **It uploads nothing.** The analysis happens in your runner. A security tool
+  that sends your most sensitive prose to a third party has made a poor trade
+  on your behalf.
+- **It installs nothing at run time.** The analyzer is vendored, because one
+  that downloads its own implementation at audit time is a strange thing to
+  trust. See [ADR 0001](docs/adr/0001-vendor-the-analyzer.md).
+- **It does not fix anything.** It reports; `agtmls-lsp` offers the fixes.
 
 ## Usage
 

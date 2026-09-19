@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Validate without moving the major tag"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: sebastienrousseau/agtmls-spec
+          path: .agtmls-spec
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "20"
+
+      - run: node --test
+      - name: The vendored analyzer must be current
+        env:
+          AGTMLS_SPEC: ${{ github.workspace }}/.agtmls-spec
+        run: node scripts/check-vendor-fresh.mjs
+      - name: Tag must match package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          test "v${VERSION}" = "${GITHUB_REF_NAME}" || {
+            echo "::error::tag ${GITHUB_REF_NAME} does not match package.json ${VERSION}"
+            exit 1
+          }
+
+      # Consumers pin `@v1`. Moving it only after the checks above pass is what
+      # makes that pin safe: a broken release never becomes v1.
+      - name: Move the major tag
+        if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          MAJOR="v${GITHUB_REF_NAME#v}"; MAJOR="${MAJOR%%.*}"
+          git tag -f "$MAJOR" "${GITHUB_REF_NAME}"
+          git push -f origin "$MAJOR"
+          gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes
