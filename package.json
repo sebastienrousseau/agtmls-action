@@ -1,6 +1,6 @@
 {
   "name": "@agtmls/action",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Static security analysis for agent skills, as GitHub pull-request annotations",
   "type": "module",
