@@ -54,4 +54,5 @@ jobs:
           MAJOR="v${GITHUB_REF_NAME#v}"; MAJOR="${MAJOR%%.*}"
           git tag -f "$MAJOR" "${GITHUB_REF_NAME}"
           git push -f origin "$MAJOR"
-          gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes
+          # The title is `<project> <version>`, without the v (the release page format).
+          gh release create "${GITHUB_REF_NAME}" --title "agtmls-action ${GITHUB_REF_NAME#v}" --generate-notes
