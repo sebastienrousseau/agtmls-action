@@ -3,7 +3,7 @@
 
 # Changelog
 
-## [0.0.3] - Unreleased
+## [0.0.3] - 2026-11-15
 
 ### Changed
 
@@ -13,6 +13,11 @@
   fingerprint for out-of-band checks.
 - CI's `github/codeql-action/upload-sarif` moves to v4.39.3 (Dependabot #8);
   this branch's earlier group bump had left it at v4.38.3, behind main.
+
+### Fixed (release tooling)
+
+- The GitHub release is titled `agtmls-action 0.0.3`; `release.yml` titled
+  it with the bare tag (`v0.0.2`), against the release page format.
 
 ## [0.0.2] - 2026-10-11
 
