@@ -11,6 +11,8 @@
   `SHA256:kIOPAavp1TCEauTr1tTIN3cv+tSs6F9m/4lZjuM9tqk`, so release tags can
   be signed on either maintainer machine. Each key line now carries its
   fingerprint for out-of-band checks.
+- CI's `github/codeql-action/upload-sarif` moves to v4.39.3 (Dependabot #8);
+  this branch's earlier group bump had left it at v4.38.3, behind main.
 
 ## [0.0.2] - 2026-10-11
 
