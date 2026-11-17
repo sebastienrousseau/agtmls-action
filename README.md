@@ -42,7 +42,7 @@ permissions:
 
 steps:
   - uses: actions/checkout@v5
-  - uses: sebastienrousseau/agtmls-action@v1
+  - uses: sebastienrousseau/agtmls-action@v0.0.35
     id: audit
     with:
       path: .claude/skills
@@ -82,7 +82,7 @@ steps:
   - uses: actions/checkout@v5
     with:
       fetch-depth: 0 # to list the agent configuration the branch changes
-  - uses: sebastienrousseau/agtmls-action@v1
+  - uses: sebastienrousseau/agtmls-action@v0.0.35
     with:
       comment: true
 ```

@@ -124,3 +124,12 @@ test("a summary comment that cannot be posted is a warning, never a different ex
   assert.match(stdout, /::warning::AgtMLS could not post its summary comment/);
 });
 
+
+test("the README's usage examples pin a tag that exists: this release", async () => {
+  const root = path.join(HERE, "..");
+  const { version } = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  const readme = await readFile(path.join(root, "README.md"), "utf8");
+  const refs = [...readme.matchAll(/uses: sebastienrousseau\/agtmls-action@(\S+)/g)].map((m) => m[1]);
+  assert.ok(refs.length > 0, "the README shows how to use the action");
+  assert.deepEqual([...new Set(refs)], [`v${version}`]);
+});

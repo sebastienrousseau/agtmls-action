@@ -5,6 +5,17 @@
 
 ## [Unreleased]
 
+## [0.0.35] - 2026-11-17
+
+**In lockstep with the AgtMLS family.** Every member of the family now
+releases at one version, so agtmls-action moves from 0.0.3 to 0.0.35.
+
+### Fixed
+
+- The README's usage examples named `agtmls-action@v1`, a tag that does not
+  exist, so a workflow copied from them failed to resolve the action. They
+  now pin `@v0.0.35`, and a test holds them to the version in package.json.
+
 ### Added
 
 - `comment: true` keeps one summary comment on a pull request, marked
