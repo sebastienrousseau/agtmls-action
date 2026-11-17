@@ -96,3 +96,31 @@ test("an invalid fail-on is a usage error, not a silent default", async () => {
   await rm(out, { recursive: true, force: true });
   assert.equal(code, 2, "usage errors must exit 2");
 });
+
+test("SARIF and annotations carry the rule's message, never the text it matched", async () => {
+  const { sarif } = await audit("evil", "never");
+  const serialised = JSON.stringify(sarif);
+  assert.ok(sarif.runs[0].results.length > 0);
+  assert.ok(!serialised.includes("attacker.example"), "a matched URL leaked into the SARIF report");
+  assert.ok(!serialised.includes("curl -s"), "a matched command leaked into the SARIF report");
+});
+
+test("a summary comment that cannot be posted is a warning, never a different exit code", async () => {
+  const out = await mkdtemp(path.join(tmpdir(), "agtmls-action-"));
+  let code = 0;
+  let stdout = "";
+  try {
+    ({ stdout } = await run("node", [RUNNER], {
+      env: { ...process.env, INPUT_PATH: path.join(HERE, "fixtures", "clean"), INPUT_FAIL_ON: "high",
+             INPUT_SARIF_FILE: path.join(out, "s.sarif"), INPUT_COMMENT: "true", INPUT_GITHUB_TOKEN: "t",
+             GITHUB_EVENT_PATH: path.join(out, "absent.json"), GITHUB_REPOSITORY: "o/r" },
+    }));
+  } catch (error) {
+    code = error.code ?? 1;
+    stdout = error.stdout;
+  }
+  await rm(out, { recursive: true, force: true });
+  assert.equal(code, 0);
+  assert.match(stdout, /::warning::AgtMLS could not post its summary comment/);
+});
+

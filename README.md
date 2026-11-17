@@ -56,6 +56,41 @@ steps:
 `if: always()` matters: you want the findings uploaded on the run that failed,
 which is the run you care about.
 
+### A summary comment on pull requests
+
+With `comment: true`, a pull request gets one comment that says what the audit
+found and which agent configuration the branch changes (`.claude/`,
+`.mcp.json`, `CLAUDE.md`, `AGENTS.md`, `.codex/`, `opencode.json` and the
+rest an agent loads on its next run, unread). It is edited in place on every
+push, posted only when there is something to report, and turned into a clean
+verdict when a later push fixes everything. A run the pull request has moved
+past writes nothing, so an old run never overwrites a newer verdict; cancel
+superseded runs with `concurrency` as well.
+
+```yaml
+on: pull_request
+
+concurrency:
+  group: agtmls-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+steps:
+  - uses: actions/checkout@v5
+    with:
+      fetch-depth: 0 # to list the agent configuration the branch changes
+  - uses: sebastienrousseau/agtmls-action@v1
+    with:
+      comment: true
+```
+
+The comment, the annotations and the SARIF report carry each rule's message,
+never the text it matched, so a planted secret or payload is not repeated
+back into the pull request.
+
 ## What it detects
 
 | Rule class | Detects |
@@ -80,6 +115,8 @@ exists for.
 | `fail-on` | `high` | `critical` / `high` / `medium` / `low` / `never` |
 | `sarif-file` | `agtmls.sarif` | Where to write the report |
 | `rules` | *(embedded)* | An [`agtmls-spec`](https://github.com/sebastienrousseau/agtmls-spec) rules directory, to pin a specific rule set |
+| `comment` | `false` | On a pull request, keep one summary comment updated in place |
+| `github-token` | `${{ github.token }}` | Token for the comment; needs `pull-requests: write` |
 
 ## How it runs
 

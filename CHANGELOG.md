@@ -3,6 +3,20 @@
 
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- `comment: true` keeps one summary comment on a pull request, marked
+  `<!-- agtmls-audit -->` and edited in place: the findings by severity, a
+  table of up to 20, and the agent configuration the branch changes (the
+  list `agtmls audit --changed-agent-config` watches). It is posted only
+  when there is something to report, turned into a clean verdict when a
+  later push fixes everything, edits only a bot's comment, and is skipped
+  when the pull request's head has moved past the run's. A failed API call
+  is a warning; the exit code stays the audit's. `github-token` input.
+- Tests that the SARIF report never repeats the text a rule matched.
+
 ## [0.0.3] - 2026-11-15
 
 ### Changed
