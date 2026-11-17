@@ -17,6 +17,13 @@
   is a warning; the exit code stays the audit's. `github-token` input.
 - Tests that the SARIF report never repeats the text a rule matched.
 
+### Changed
+
+- The vendored analyzer is rebuilt from agtmls-wasm 0.0.6 on agtmls-spec
+  main (b5a6954): 57 rules, up from 39, with the agent-configuration and
+  `AGT-CI` workflow rules. `check-vendor-fresh.mjs` failed against spec main
+  from the moment AGT-MCP-002 merged there.
+
 ## [0.0.3] - 2026-11-15
 
 ### Changed

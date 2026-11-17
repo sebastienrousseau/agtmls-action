@@ -101,6 +101,10 @@ back into the pull request.
 | `AGT-EXFIL` | Markdown image pingbacks that leak context on render |
 | `AGT-CAP` | Frontmatter granting a tool the skill's own `safety_policy` denies |
 | `AGT-POLICY` | A declared policy contradicted by the skill's prose, or absent entirely |
+| `AGT-HOOK`, `AGT-MCP` | Hooks that fetch, auto-approve, inject context or run ungated on every turn; MCP servers that are unpinned, over plain HTTP, or loaded from outside the repository |
+| `AGT-SUPPLY`, `AGT-PERM` | Unpinned runners and plugin sources; approval prompts switched off or destructive commands pre-approved |
+| `AGT-CI` | Workflows that run an agent or hand a secret to an action on a mutable ref, check out pull request code on an untrusted trigger, or open an agent to anyone |
+| `AGT-PERSIST`, `AGT-INST`, `AGT-RENDER`, `AGT-SUPPRESS`, `AGT-ATTR` | Self-scheduling, `rm -rf` over agent directories, instructions hidden in comments or alt text, markers that silence other scanners, instructions to strip AI attribution |
 
 Rules are matched against the **whitespace-normalised** document, so a payload
 split across a newline does not walk past them. Every file is read, not only
