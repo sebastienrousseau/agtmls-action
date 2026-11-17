@@ -16,10 +16,16 @@ trust.
 
 ```bash
 cd ../../Rust/agtmls-wasm
-wasm-pack build --target nodejs --release --out-dir pkg-node
+AGTMLS_SPEC=../../Python/agtmls-spec \
+RUSTFLAGS="--remap-path-prefix=$HOME/.cargo=/cargo --remap-path-prefix=$HOME/.rustup=/rustup --remap-path-prefix=$HOME/Code/Public=/src" \
+  wasm-pack build --target nodejs --release --out-dir pkg-node
 cp pkg-node/agtmls_wasm{.js,_bg.wasm,.d.ts} \
    ../../JavaScript/agtmls-action/vendor/wasm/
 ```
+
+The `--remap-path-prefix` flags keep the builder's home directory out of the
+module: rustc records source paths for panic locations, and a test fails on
+any `/Users/` or `/home/` in it.
 
 `scripts/check-vendor-fresh.mjs` fails CI if these files do not match a fresh
 build, so a stale analyzer cannot ship quietly.

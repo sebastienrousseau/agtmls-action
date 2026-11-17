@@ -25,6 +25,14 @@ inputs:
     description: "Path to an agtmls-spec rules directory. Defaults to the rule set embedded in the module."
     required: false
     default: ""
+  comment:
+    description: "On a pull request, keep one summary comment (findings, and agent configuration the branch changes) updated in place. Needs pull-requests: write, and fetch-depth: 0 to list changes."
+    required: false
+    default: "false"
+  github-token:
+    description: "Token for the summary comment."
+    required: false
+    default: ${{ github.token }}
 
 outputs:
   findings:
@@ -53,4 +61,6 @@ runs:
         INPUT_FAIL_ON: ${{ inputs.fail-on }}
         INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
         INPUT_RULES: ${{ inputs.rules }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
       run: node "$GITHUB_ACTION_PATH/src/run.mjs"

@@ -96,3 +96,51 @@ test("an invalid fail-on is a usage error, not a silent default", async () => {
   await rm(out, { recursive: true, force: true });
   assert.equal(code, 2, "usage errors must exit 2");
 });
+
+test("SARIF and annotations carry the rule's message, never the text it matched", async () => {
+  const { sarif } = await audit("evil", "never");
+  const serialised = JSON.stringify(sarif);
+  assert.ok(sarif.runs[0].results.length > 0);
+  assert.ok(!serialised.includes("attacker.example"), "a matched URL leaked into the SARIF report");
+  assert.ok(!serialised.includes("curl -s"), "a matched command leaked into the SARIF report");
+});
+
+test("a summary comment that cannot be posted is a warning, never a different exit code", async () => {
+  const out = await mkdtemp(path.join(tmpdir(), "agtmls-action-"));
+  let code = 0;
+  let stdout = "";
+  try {
+    ({ stdout } = await run("node", [RUNNER], {
+      env: { ...process.env, INPUT_PATH: path.join(HERE, "fixtures", "clean"), INPUT_FAIL_ON: "high",
+             INPUT_SARIF_FILE: path.join(out, "s.sarif"), INPUT_COMMENT: "true", INPUT_GITHUB_TOKEN: "t",
+             GITHUB_EVENT_PATH: path.join(out, "absent.json"), GITHUB_REPOSITORY: "o/r" },
+    }));
+  } catch (error) {
+    code = error.code ?? 1;
+    stdout = error.stdout;
+  }
+  await rm(out, { recursive: true, force: true });
+  assert.equal(code, 0);
+  assert.match(stdout, /::warning::AgtMLS could not post its summary comment/);
+});
+
+
+test("the README's usage examples pin a tag that exists: this release", async () => {
+  const root = path.join(HERE, "..");
+  const { version } = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  const readme = await readFile(path.join(root, "README.md"), "utf8");
+  const refs = [...readme.matchAll(/uses: sebastienrousseau\/agtmls-action@(\S+)/g)].map((m) => m[1]);
+  assert.ok(refs.length > 0, "the README shows how to use the action");
+  assert.deepEqual([...new Set(refs)], [`v${version}`]);
+});
+
+test("the vendored analyzer carries no build machine's home directory", async () => {
+  // rustc records source paths for panic locations. A build without
+  // --remap-path-prefix ships the builder's home directory (and user name)
+  // inside the module every workflow downloads.
+  const wasm = await readFile(path.join(HERE, "..", "vendor", "wasm", "agtmls_wasm_bg.wasm"));
+  const text = wasm.toString("latin1");
+  for (const home of ["/Users/", "/home/"]) {
+    assert.equal(text.includes(home), false, `vendor/wasm/agtmls_wasm_bg.wasm contains ${home}`);
+  }
+});

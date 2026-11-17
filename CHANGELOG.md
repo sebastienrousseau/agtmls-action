@@ -3,6 +3,42 @@
 
 # Changelog
 
+## [Unreleased]
+
+## [0.0.35] - 2026-11-17
+
+**In lockstep with the AgtMLS family.** Every member of the family now
+releases at one version, so agtmls-action moves from 0.0.3 to 0.0.35.
+
+### Fixed
+
+- The README's usage examples named `agtmls-action@v1`, a tag that does not
+  exist, so a workflow copied from them failed to resolve the action. They
+  now pin `@v0.0.35`, and a test holds them to the version in package.json.
+- The vendored analyzer carried the builder's home directory (104 source
+  paths under `/Users/...`, recorded by rustc for panic locations). It is
+  now built with `--remap-path-prefix`, and a test fails on any `/Users/`
+  or `/home/` in the module.
+
+### Added
+
+- `comment: true` keeps one summary comment on a pull request, marked
+  `<!-- agtmls-audit -->` and edited in place: the findings by severity, a
+  table of up to 20, and the agent configuration the branch changes (the
+  list `agtmls audit --changed-agent-config` watches). It is posted only
+  when there is something to report, turned into a clean verdict when a
+  later push fixes everything, edits only a bot's comment, and is skipped
+  when the pull request's head has moved past the run's. A failed API call
+  is a warning; the exit code stays the audit's. `github-token` input.
+- Tests that the SARIF report never repeats the text a rule matched.
+
+### Changed
+
+- The vendored analyzer is rebuilt from agtmls-wasm 0.0.35 on agtmls-spec
+  0.0.35: 57 rules, up from 39, with the agent-configuration and
+  `AGT-CI` workflow rules. `check-vendor-fresh.mjs` failed against spec main
+  from the moment AGT-MCP-002 merged there.
+
 ## [0.0.3] - 2026-11-15
 
 ### Changed

@@ -15,6 +15,8 @@ import { appendFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
+import { postSummary } from "./comment.mjs";
+
 const SEVERITY_RANK = { LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 3 };
 const FAIL_ON_RANK = { never: Infinity, low: 0, medium: 1, high: 2, critical: 3 };
 
@@ -152,6 +154,21 @@ async function main() {
   await setOutput("findings", findings.length);
   await setOutput("blocking", blocking.length);
   await setOutput("sarif-file", sarifFile);
+
+  if ((process.env.INPUT_COMMENT || "false").toLowerCase() === "true") {
+    // The comment reports the audit; it never decides it. A failed API call
+    // is a warning, and the exit code stays the audit's.
+    try {
+      const done = await postSummary(findings, {
+        token: process.env.INPUT_GITHUB_TOKEN,
+        eventPath: process.env.GITHUB_EVENT_PATH,
+        repo: process.env.GITHUB_REPOSITORY,
+      });
+      console.log(`AgtMLS: summary comment ${done}`);
+    } catch (error) {
+      console.log(`::warning::AgtMLS could not post its summary comment: ${error?.message || error}`);
+    }
+  }
 
   process.exit(blocking.length > 0 ? 1 : 0);
 }
