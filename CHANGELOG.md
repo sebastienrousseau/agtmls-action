@@ -15,6 +15,10 @@ releases at one version, so agtmls-action moves from 0.0.3 to 0.0.35.
 - The README's usage examples named `agtmls-action@v1`, a tag that does not
   exist, so a workflow copied from them failed to resolve the action. They
   now pin `@v0.0.35`, and a test holds them to the version in package.json.
+- The vendored analyzer carried the builder's home directory (104 source
+  paths under `/Users/...`, recorded by rustc for panic locations). It is
+  now built with `--remap-path-prefix`, and a test fails on any `/Users/`
+  or `/home/` in the module.
 
 ### Added
 
@@ -30,8 +34,8 @@ releases at one version, so agtmls-action moves from 0.0.3 to 0.0.35.
 
 ### Changed
 
-- The vendored analyzer is rebuilt from agtmls-wasm 0.0.6 on agtmls-spec
-  main (b5a6954): 57 rules, up from 39, with the agent-configuration and
+- The vendored analyzer is rebuilt from agtmls-wasm 0.0.35 on agtmls-spec
+  0.0.35: 57 rules, up from 39, with the agent-configuration and
   `AGT-CI` workflow rules. `check-vendor-fresh.mjs` failed against spec main
   from the moment AGT-MCP-002 merged there.
 

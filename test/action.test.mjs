@@ -133,3 +133,14 @@ test("the README's usage examples pin a tag that exists: this release", async ()
   assert.ok(refs.length > 0, "the README shows how to use the action");
   assert.deepEqual([...new Set(refs)], [`v${version}`]);
 });
+
+test("the vendored analyzer carries no build machine's home directory", async () => {
+  // rustc records source paths for panic locations. A build without
+  // --remap-path-prefix ships the builder's home directory (and user name)
+  // inside the module every workflow downloads.
+  const wasm = await readFile(path.join(HERE, "..", "vendor", "wasm", "agtmls_wasm_bg.wasm"));
+  const text = wasm.toString("latin1");
+  for (const home of ["/Users/", "/home/"]) {
+    assert.equal(text.includes(home), false, `vendor/wasm/agtmls_wasm_bg.wasm contains ${home}`);
+  }
+});
